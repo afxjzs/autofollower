@@ -2,29 +2,13 @@
 require 'twitter'
 require 'yaml'
 
-@keys = YAML.load_file('config.yml')
+keys = YAML.load_file('config.yml')
 
-def rest_client
-  Twitter::REST::Client.new do |config|
-    config.consumer_key        = @keys['consumer_key']
-    config.consumer_secret     = @keys['consumer_secret']
-    config.access_token        = @keys['access_token']
-    config.access_token_secret = @keys['access_token_secret']
-  end
-end
+rest_client = Twitter::REST::Client.new(keys)
 
-def streaming_client
-  Twitter::Streaming::Client.new do |config|
-    config.consumer_key        = @keys['consumer_key']
-    config.consumer_secret     = @keys['consumer_secret']
-    config.access_token        = @keys['access_token']
-    config.access_token_secret = @keys['access_token_secret']
-  end
-end
-
+streaming_client = Twitter::Streaming::Client.new(keys)
 
 search_term = ARGV[0] || nil
-
 
 limit = ARGV[1] || 10
 
@@ -39,7 +23,7 @@ unless search_term.nil?
         rest_client.follow!(object.user)
         x += 1
       end
-    rescue Twitter::Error::TooManyReqeusts => error
+    rescue Twitter::Error::TooManyRequests => error
       puts error
     end
     if x>limit.to_i
